@@ -1,4 +1,4 @@
-.PHONY: install run detect test lint report clean
+.PHONY: install run detect test lint report dashboard clean
 
 install:
 	pip install -e .
@@ -17,6 +17,9 @@ lint:
 
 report:
 	absolutus report
+
+dashboard:
+	absolutus dashboard
 
 clean:
 	rm -f data/events.csv data/absolutus.db r/analysis.html

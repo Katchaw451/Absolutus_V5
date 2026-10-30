@@ -54,6 +54,21 @@ def cmd_report(args):
     return 0
 
 
+def cmd_dashboard(args):
+    """Launch the Streamlit dashboard."""
+    if not shutil.which("streamlit"):
+        print(
+            "streamlit not found. Install with: pip install -e '.[dashboard]'",
+            file=sys.stderr,
+        )
+        return 1
+    subprocess.run(
+        ["streamlit", "run", str(Path("src/absolutus/dashboard.py"))],
+        check=False,
+    )
+    return 0
+
+
 def main(argv=None):
     p = argparse.ArgumentParser(
         prog="absolutus",
@@ -73,6 +88,9 @@ def main(argv=None):
 
     sr = sub.add_parser("report", help="Parse then render R Markdown.")
     sr.set_defaults(func=cmd_report)
+
+    sdash = sub.add_parser("dashboard", help="Launch the Streamlit UI.")
+    sdash.set_defaults(func=cmd_dashboard)
 
     args = p.parse_args(argv)
     return args.func(args) or 0

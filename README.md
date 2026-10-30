@@ -10,7 +10,7 @@ R Markdown report.
 
 **Stack:** Python, SQL, R, Cybersecurity
 
-**Status:** v4.0.0 — packaged as installable CLI (absolutus parse/detect/report).
+**Status:** v5.0.0 — interactive Streamlit dashboard with filters.
 
 ## Quickstart
 
@@ -59,3 +59,14 @@ Off-hours failures (03_offhours.sql):
 ## License
 
 MIT
+
+## Dashboard
+
+    pip install -e ".[dashboard]"
+    absolutus dashboard
+
+Opens a local Streamlit app with:
+- Filters by IP, user, auth result
+- Failed-login time-series and per-IP bar charts
+- HTTP status distribution
+- Scan + brute-force correlation table
