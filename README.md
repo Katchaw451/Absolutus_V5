@@ -1,5 +1,7 @@
 # Absolutus_V5
 
+[![CI](https://github.com/Katchaw451/Absolutus_V5/actions/workflows/ci.yml/badge.svg)](https://github.com/Katchaw451/Absolutus_V5/actions/workflows/ci.yml)
+
 **Cybersecurity + data portfolio project: raw SSH auth logs -> Python -> SQL -> R.**
 
 Parses failed-login events into SQLite, runs detection queries
@@ -8,7 +10,7 @@ R Markdown report.
 
 **Stack:** Python, SQL, R, Cybersecurity
 
-**Status:** v2.0.0 — multi-source (auth + nginx), correlation rules.
+**Status:** v3.0.0 — CI (ruff + tests), badge, roadmap.
 
 ## Quickstart
 
