@@ -42,6 +42,8 @@ Rules available for `detect`:
 4. Render an R Markdown report (time-series + per-IP plots).
 5. Serve an interactive Streamlit dashboard (filters, KPIs, correlation table).
 
+![Dashboard](docs/dashboard.png)
+
 ## Sample output
 
     $ absolutus parse
