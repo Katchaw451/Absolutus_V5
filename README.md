@@ -1,22 +1,59 @@
 # Absolutus_V5
 
-Cybersecurity + data portfolio: raw auth logs → Python → SQL → R.
+**Cybersecurity + data portfolio project: raw SSH auth logs -> Python -> SQL -> R.**
 
-**Stack:** Python · SQL · R · Cybersecurity
+Parses failed-login events into SQLite, runs detection queries
+(brute-force, top attackers, off-hours bursts), and produces an
+R Markdown report.
 
-## Pipeline
-data/sample_auth.log
-│ python/pipeline.py
-▼
-data/events.csv + data/absolutus.db (SQLite)
-│ sql/schema.sql + sql/queries/*
-▼
-detection views → r/analysis.Rmd → HTML report
+**Stack:** Python, SQL, R, Cybersecurity
 
+**Status:** v1.0.0 — end-to-end pipeline, detection rules, tests, docs.
 
-## Run
-make run # parse log → SQLite + CSV
-make report # render R Markdown (needs R)
+## Quickstart
+
+    make run     # parse log -> CSV + SQLite
+    make test    # unit tests
+    make report  # R Markdown (requires R)
+
+## Sample output
+
+Top attackers (sql/queries/01_top_attackers.sql):
+
+    203.0.113.9|6|2026-10-30T08:15:11|2026-10-30T08:15:21
+    198.51.100.7|5|2026-10-30T02:30:00|2026-10-30T09:02:48
+    203.0.113.77|2|2026-10-30T14:00:00|2026-10-30T14:00:02
+
+Brute-force (02_bruteforce.sql):
+
+    203.0.113.9|admin|6
+    198.51.100.7|root|5
+
+Off-hours failures (03_offhours.sql):
+
+    198.51.100.7|2026-10-30T02:30:00|root
+    198.51.100.7|2026-10-30T02:30:02|root
+
+## Structure
+
+    Absolutus_V5/
+    |-- Makefile
+    |-- data/       sample_auth.log (tracked), *.db + events.csv (gitignored)
+    |-- python/     pipeline.py
+    |-- sql/        schema.sql + queries/
+    |-- r/          analysis.Rmd
+    |-- tests/      test_pipeline.py (stdlib unittest)
+    |-- security/   detection notes + writeups/
+    +-- docs/       architecture notes
+
+## Roadmap
+
+- v1.x: more detection rules, config file
+- v2.x: multi-source (nginx + auth correlation)
+- v3.x: CI (GitHub Actions), real datasets
+- v4.x: interactive dashboard
+- v5.x: ML-based anomaly detection
 
 ## License
+
 MIT

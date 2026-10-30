@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 import re, sqlite3
-from datetime import datetime
+from datetime import datetime, timezone
 from pathlib import Path
 
 PAT = re.compile(
