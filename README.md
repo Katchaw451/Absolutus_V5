@@ -9,7 +9,7 @@ detection rules (brute-force, top attackers, off-hours, scan+brute
 correlation), and exposes everything through an interactive dashboard.
 
 **Stack:** Python, SQL, R, Streamlit, Cybersecurity
-**Status:** v5.0.0 — installable CLI + interactive dashboard
+**Status:** v6.0.0 — IsolationForest anomaly detection over per-IP behavior.
 **License:** MIT
 
 ## Quickstart
@@ -113,3 +113,29 @@ dashboard import check on every push and pull request.
 ## License
 
 MIT
+
+## Anomaly detection (v6)
+
+Unsupervised scoring of every IP with IsolationForest, using per-IP
+behavioral features:
+
+    n_events, n_failed_auth, n_http_404, unique_users,
+    rate_per_min, offhours_ratio, http_404_ratio
+
+    absolutus anomalies --top 10
+
+Output is also stored in `anomaly_scores` and surfaced in the dashboard
+as an "Anomalies" table plus a bar chart of the top scores.
+
+### Synthetic dataset
+
+    python3 scripts/generate_synthetic.py
+    absolutus parse --auth data/synthetic_auth.log --nginx data/synthetic_nginx.log
+
+Generates ~2k auth + ~800 HTTP lines: benign traffic, 30 SSH
+brute-force bursts, 10 HTTP scanners, and one "both" attacker.
+
+The IsolationForest ranks the combined-attack IP first
+(score=1.000, 120 events = 60 SSH + 60 HTTP). Single-source bursts
+form the second tier (score ~0.51). This is the expected behavior
+for unsupervised detection with `contamination="auto"`.

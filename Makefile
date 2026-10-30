@@ -21,5 +21,8 @@ report:
 dashboard:
 	absolutus dashboard
 
+anomalies:
+	absolutus anomalies --top 10
+
 clean:
 	rm -f data/events.csv data/absolutus.db r/analysis.html

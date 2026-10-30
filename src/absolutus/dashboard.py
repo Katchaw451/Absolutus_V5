@@ -92,6 +92,24 @@ if corr.empty:
 else:
     st.dataframe(corr, use_container_width=True)
 
+
+# --- Anomalies (v6) ---
+st.subheader("Anomalies (IsolationForest)")
+try:
+    con = sqlite3.connect(DB)
+    anom = pd.read_sql_query(
+        "SELECT * FROM anomaly_scores ORDER BY anomaly_score DESC", con
+    )
+    con.close()
+except Exception:
+    anom = pd.DataFrame()
+if anom.empty:
+    st.info("Run `absolutus anomalies` first to score IPs.")
+else:
+    st.dataframe(anom, use_container_width=True)
+    top = anom.head(15)
+    st.bar_chart(top.set_index("ip")["anomaly_score"])
+
 # --- Raw ---
 with st.expander("Raw auth events"):
     st.dataframe(view.sort_values("ts", ascending=False), use_container_width=True)

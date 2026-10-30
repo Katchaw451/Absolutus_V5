@@ -22,7 +22,7 @@ RULES = {
 
 def cmd_parse(args):
     """Run the parse pipeline (auth + nginx -> CSV + SQLite)."""
-    parse_main()
+    parse_main(auth=args.auth, nginx=args.nginx)
     return 0
 
 
@@ -69,6 +69,23 @@ def cmd_dashboard(args):
     return 0
 
 
+def cmd_anomalies(args):
+    """Score all IPs with IsolationForest and print the top N."""
+    from absolutus.anomaly import run as run_anomaly
+
+    ranked = run_anomaly()
+    n = args.top
+    for _, row in ranked.head(n).iterrows():
+        print(
+            f"{row['ip']}|score={row['anomaly_score']:.3f}"
+            f"|anomaly={int(row['is_anomaly'])}"
+            f"|events={int(row['n_events'])}"
+            f"|failed={int(row['n_failed_auth'])}"
+            f"|404s={int(row['n_http_404'])}"
+        )
+    return 0
+
+
 def main(argv=None):
     p = argparse.ArgumentParser(
         prog="absolutus",
@@ -80,6 +97,8 @@ def main(argv=None):
     sub = p.add_subparsers(dest="cmd", required=True)
 
     sp = sub.add_parser("parse", help="Parse logs into CSV + SQLite.")
+    sp.add_argument("--auth", default="data/sample_auth.log")
+    sp.add_argument("--nginx", default="data/sample_nginx.log")
     sp.set_defaults(func=cmd_parse)
 
     sd = sub.add_parser("detect", help="Run a detection query.")
@@ -91,6 +110,10 @@ def main(argv=None):
 
     sdash = sub.add_parser("dashboard", help="Launch the Streamlit UI.")
     sdash.set_defaults(func=cmd_dashboard)
+
+    sa = sub.add_parser("anomalies", help="Score IPs with IsolationForest.")
+    sa.add_argument("--top", type=int, default=10)
+    sa.set_defaults(func=cmd_anomalies)
 
     args = p.parse_args(argv)
     return args.func(args) or 0

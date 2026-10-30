@@ -46,10 +46,10 @@ def parse_nginx(path):
     return rows
 
 
-def main():
+def main(auth=None, nginx=None):
     year = str(datetime.now(timezone.utc).year)
-    auth_p = Path("data/sample_auth.log")
-    nginx_p = Path("data/sample_nginx.log")
+    auth_p = Path(auth) if auth else Path("data/sample_auth.log")
+    nginx_p = Path(nginx) if nginx else Path("data/sample_nginx.log")
     auth = parse_auth(auth_p, year) if auth_p.exists() else []
     http = parse_nginx(nginx_p) if nginx_p.exists() else []
 
