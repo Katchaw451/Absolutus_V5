@@ -35,7 +35,8 @@ jobs:
           absolutus detect top
           absolutus detect correlation
 
-      - name: Dashboard import check
+      - name: Dashboard + ML import check
         run: |
-          pip install -e ".[dashboard]"
+          pip install -e ".[dashboard,ml]"
           python3 -c "import absolutus.dashboard"
+          python3 -c "from absolutus.anomaly import run"
