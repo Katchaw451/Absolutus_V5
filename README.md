@@ -8,7 +8,7 @@ R Markdown report.
 
 **Stack:** Python, SQL, R, Cybersecurity
 
-**Status:** v1.0.0 — end-to-end pipeline, detection rules, tests, docs.
+**Status:** v2.0.0 — multi-source (auth + nginx), correlation rules.
 
 ## Quickstart
 
