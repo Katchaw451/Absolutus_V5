@@ -52,7 +52,15 @@ c1.metric("Auth events", len(auth))
 failed_count = int((auth["result"] == "failed").sum()) if not auth.empty else 0
 c2.metric("Failed logins", failed_count)
 c3.metric("HTTP events", len(http))
-c4.metric("High-risk IPs", len(corr))
+try:
+    _con = sqlite3.connect(DB)
+    _n_anom = int(_con.execute(
+        "SELECT COUNT(*) FROM anomaly_scores WHERE is_anomaly=1"
+    ).fetchone()[0])
+    _con.close()
+except Exception:
+    _n_anom = 0
+c4.metric("Anomalies (ML)", _n_anom)
 
 # --- Charts ---
 st.subheader("Failed logins over time")
