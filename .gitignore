@@ -1,0 +1,8 @@
+__pycache__/
+*.pyc
+.venv/
+*.db
+.Rhistory
+.RData
+.Rproj.user
+data/*.csv

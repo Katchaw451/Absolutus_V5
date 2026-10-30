@@ -1,0 +1,20 @@
+---
+title: "Absolutus_V5 — Failed Login Analysis"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(warning=FALSE, message=FALSE)
+library(DBI); library(RSQLite); library(ggplot2); library(dplyr)
+con <- dbConnect(SQLite(), "../data/absolutus.db")
+events <- dbReadTable(con, "events") %>% mutate(ts = as.POSIXct(ts))
+dbDisconnect(con)
+nrow(events)
+events %>% filter(result=="failed") %>%
+  mutate(hour = format(ts, "%Y-%m-%d %H:00")) %>% count(hour) %>%
+  ggplot(aes(as.POSIXct(hour), n)) + geom_col(fill="firebrick") +
+  labs(x="Hour", y="Fails", title="Failed logins over time") + theme_minimal()
+events %>% filter(result=="failed") %>% count(ip, sort=TRUE) %>%
+  slice_head(n=10) %>% ggplot(aes(reorder(ip, n), n)) +
+  geom_col(fill="steelblue") + coord_flip() +
+  labs(x="IP", y="Fails", title="Top 10 IPs") + theme_minimal()
