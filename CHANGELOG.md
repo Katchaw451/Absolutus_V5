@@ -41,3 +41,15 @@
 ### Changed
 - python/pipeline.py is now a thin backward-compat shim.
 - Makefile targets use the absolutus CLI.
+
+## [v5.0.0] - 2026-10-30
+
+### Added
+- Streamlit dashboard (src/absolutus/dashboard.py).
+- CLI subcommand: absolutus dashboard.
+- Optional extras: pip install -e ".[dashboard]".
+- CI: dashboard import check.
+- Rewritten README with quickstart, CLI table, detection table, structure.
+
+### Changed
+- Bumped version to 5.0.0.

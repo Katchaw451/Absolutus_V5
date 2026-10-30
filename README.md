@@ -2,71 +2,114 @@
 
 [![CI](https://github.com/Katchaw451/Absolutus_V5/actions/workflows/ci.yml/badge.svg)](https://github.com/Katchaw451/Absolutus_V5/actions/workflows/ci.yml)
 
-**Cybersecurity + data portfolio project: raw SSH auth logs -> Python -> SQL -> R.**
+**Multi-source security log pipeline: SSH auth + nginx -> Python -> SQL -> R -> Streamlit.**
 
-Parses failed-login events into SQLite, runs detection queries
-(brute-force, top attackers, off-hours bursts), and produces an
-R Markdown report.
+Parses failed logins and HTTP 404 scans, stores events in SQLite, runs
+detection rules (brute-force, top attackers, off-hours, scan+brute
+correlation), and exposes everything through an interactive dashboard.
 
-**Stack:** Python, SQL, R, Cybersecurity
-
-**Status:** v5.0.0 — interactive Streamlit dashboard with filters.
+**Stack:** Python, SQL, R, Streamlit, Cybersecurity
+**Status:** v5.0.0 — installable CLI + interactive dashboard
+**License:** MIT
 
 ## Quickstart
 
-    pip install -e .      # one-time install
-    absolutus parse       # parse logs -> CSV + SQLite
-    absolutus detect top  # run a detection query
+    pip install -e ".[dashboard]"
+    absolutus parse            # parse logs -> CSV + SQLite
+    absolutus detect top       # run a detection query
+    absolutus detect correlation
+    absolutus dashboard        # launch Streamlit UI
+
+## CLI
+
+    absolutus parse                 parse auth + nginx logs into SQLite
+    absolutus detect <rule>         run a detection query
+    absolutus report                parse + render R Markdown (needs R)
+    absolutus dashboard             launch Streamlit UI
+    absolutus --version
+
+Rules available for `detect`:
+    top           top 10 IPs by failed attempts
+    bruteforce    >=5 failed logins per (ip, user)
+    offhours      failures between 00:00-05:59
+    correlation   IPs with >=5 SSH fails AND >=5 HTTP 404s
+
+## What it does
+
+1. Parse SSH auth log lines and nginx access lines (Python stdlib regex).
+2. Store normalized events in SQLite (events, http_events).
+3. Expose detection views (v_failed_by_ip, v_suspected_bruteforce, v_scan_and_bruteforce).
+4. Render an R Markdown report (time-series + per-IP plots).
+5. Serve an interactive Streamlit dashboard (filters, KPIs, correlation table).
 
 ## Sample output
 
-Top attackers (sql/queries/01_top_attackers.sql):
+    $ absolutus parse
+    [+] 15 auth events, 10 http events -> data/
 
+    $ absolutus detect top
     203.0.113.9|6|2026-10-30T08:15:11|2026-10-30T08:15:21
     198.51.100.7|5|2026-10-30T02:30:00|2026-10-30T09:02:48
     203.0.113.77|2|2026-10-30T14:00:00|2026-10-30T14:00:02
 
-Brute-force (02_bruteforce.sql):
+    $ absolutus detect correlation
+    203.0.113.9|6|6
 
-    203.0.113.9|admin|6
-    198.51.100.7|root|5
+## Detection rules
 
-Off-hours failures (03_offhours.sql):
+    Rule          Logic                                   File
+    ------------  --------------------------------------  ---------------------
+    top           rank IPs by failed-attempt count        01_top_attackers.sql
+    bruteforce    >=5 fails per (ip, user)                02_bruteforce.sql
+    offhours      failures 00:00-05:59                    03_offhours.sql
+    correlation   >=5 SSH fails + >=5 HTTP 404s per IP    04_scan_correlation.sql
 
-    198.51.100.7|2026-10-30T02:30:00|root
-    198.51.100.7|2026-10-30T02:30:02|root
-
-## Structure
+## Project structure
 
     Absolutus_V5/
+    |-- src/absolutus/
+    |   |-- __init__.py       version
+    |   |-- parsers.py        auth + nginx regex parsers
+    |   |-- cli.py            argument parser and subcommands
+    |   +-- dashboard.py      Streamlit app
+    |-- python/pipeline.py    backward-compat shim
+    |-- sql/
+    |   |-- schema.sql        tables + indexes + views
+    |   +-- queries/          detection queries
+    |-- r/analysis.Rmd        R Markdown report
+    |-- tests/test_pipeline.py  unit tests (unittest)
+    |-- data/
+    |   |-- sample_auth.log   tracked sample
+    |   |-- sample_nginx.log  tracked sample
+    |   |-- events.csv        gitignored
+    |   +-- absolutus.db      gitignored
+    |-- .github/workflows/ci.yml  CI: ruff + tests + CLI smoke
+    |-- pyproject.toml
     |-- Makefile
-    |-- data/       sample_auth.log (tracked), *.db + events.csv (gitignored)
-    |-- python/     pipeline.py
-    |-- sql/        schema.sql + queries/
-    |-- r/          analysis.Rmd
-    |-- tests/      test_pipeline.py (stdlib unittest)
-    |-- security/   detection notes + writeups/
-    +-- docs/       architecture notes
+    |-- CHANGELOG.md
+    +-- LICENSE
+
+## Development
+
+    make install     # pip install -e .[dashboard]
+    make test        # python unittest
+    make lint        # ruff check
+    make run         # absolutus parse
+    make report      # absolutus report (needs R)
+    make dashboard   # absolutus dashboard
+
+CI (GitHub Actions) runs ruff, unit tests, CLI smoke test and a
+dashboard import check on every push and pull request.
 
 ## Roadmap
 
-- v1.x: more detection rules, config file
-- v2.x: multi-source (nginx + auth correlation)
-- v3.x: CI (GitHub Actions), real datasets
-- v4.x: interactive dashboard
-- v5.x: ML-based anomaly detection
+- v1.x  core pipeline (auth -> SQLite -> queries)
+- v2.x  multi-source (nginx + auth correlation)
+- v3.x  CI (GitHub Actions, ruff)
+- v4.x  installable CLI (absolutus ...)
+- v5.x  interactive Streamlit dashboard      <- current
+- v6.x  ML-based anomaly detection (IsolationForest)
 
 ## License
 
 MIT
-
-## Dashboard
-
-    pip install -e ".[dashboard]"
-    absolutus dashboard
-
-Opens a local Streamlit app with:
-- Filters by IP, user, auth result
-- Failed-login time-series and per-IP bar charts
-- HTTP status distribution
-- Scan + brute-force correlation table

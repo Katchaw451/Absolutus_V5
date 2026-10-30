@@ -49,7 +49,8 @@ else:
 # --- KPIs ---
 c1, c2, c3, c4 = st.columns(4)
 c1.metric("Auth events", len(auth))
-c2.metric("Failed logins", int((auth["result"] == "failed").sum()) if not auth.empty else 0)
+failed_count = int((auth["result"] == "failed").sum()) if not auth.empty else 0
+c2.metric("Failed logins", failed_count)
 c3.metric("HTTP events", len(http))
 c4.metric("High-risk IPs", len(corr))
 
