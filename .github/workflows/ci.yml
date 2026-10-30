@@ -17,8 +17,10 @@ jobs:
         with:
           python-version: "3.11"
 
-      - name: Install ruff
-        run: pip install ruff
+      - name: Install package + ruff
+        run: |
+          pip install -e .
+          pip install ruff
 
       - name: Lint
         run: ruff check .
@@ -26,5 +28,9 @@ jobs:
       - name: Run tests
         run: python3 -m unittest discover -s tests -v
 
-      - name: Run pipeline
-        run: python3 python/pipeline.py
+      - name: CLI smoke test
+        run: |
+          absolutus --version
+          absolutus parse
+          absolutus detect top
+          absolutus detect correlation

@@ -3,8 +3,11 @@ import sys
 import unittest
 from pathlib import Path
 
-sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "python"))
-from pipeline import AUTH_PAT, NGINX_PAT  # noqa: E402
+try:
+    from absolutus.parsers import AUTH_PAT, NGINX_PAT
+except ImportError:
+    sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "src"))
+    from absolutus.parsers import AUTH_PAT, NGINX_PAT
 
 
 class TestAuthParser(unittest.TestCase):

@@ -10,13 +10,13 @@ R Markdown report.
 
 **Stack:** Python, SQL, R, Cybersecurity
 
-**Status:** v3.0.0 — CI (ruff + tests), badge, roadmap.
+**Status:** v4.0.0 — packaged as installable CLI (absolutus parse/detect/report).
 
 ## Quickstart
 
-    make run     # parse log -> CSV + SQLite
-    make test    # unit tests
-    make report  # R Markdown (requires R)
+    pip install -e .      # one-time install
+    absolutus parse       # parse logs -> CSV + SQLite
+    absolutus detect top  # run a detection query
 
 ## Sample output
 

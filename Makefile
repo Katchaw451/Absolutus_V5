@@ -1,7 +1,13 @@
-.PHONY: run test lint report clean
+.PHONY: install run detect test lint report clean
+
+install:
+	pip install -e .
 
 run:
-	python3 python/pipeline.py
+	absolutus parse
+
+detect:
+	absolutus detect top
 
 test:
 	python3 -m unittest discover -s tests -v
@@ -9,8 +15,8 @@ test:
 lint:
 	ruff check .
 
-report: run
-	Rscript -e "rmarkdown::render('r/analysis.Rmd')"
+report:
+	absolutus report
 
 clean:
 	rm -f data/events.csv data/absolutus.db r/analysis.html

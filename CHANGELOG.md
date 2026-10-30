@@ -29,3 +29,15 @@
 - ruff lint config (pyproject.toml).
 - CI badge on README.
 - make lint target.
+
+## [v4.0.0] - 2026-10-30
+
+### Added
+- Python package under src/absolutus with installable CLI.
+- CLI subcommands: absolutus parse | detect <rule> | report.
+- Entry point absolutus = absolutus.cli:main (pip install -e .).
+- CI now installs the package and runs a CLI smoke test.
+
+### Changed
+- python/pipeline.py is now a thin backward-compat shim.
+- Makefile targets use the absolutus CLI.
